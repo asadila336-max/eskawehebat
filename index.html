@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KerjaCerdas.ai - Pembuat CV Cerdas</title>
+    <style>
+        /* === BAGIAN CSS (UI/UX DESIGN) === */
+        :root {
+            --primary-color: #2563eb; /* Biru Profesional */
+            --secondary-color: #1e40af;
+            --bg-color: #f8fafc;
+            --text-color: #1e293b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Navbar Sederhana */
+        header {
+            width: 100%;
+            background-color: white;
+            padding: 20px 50px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            font-size: 24px;
+        }
+
+        .btn-premium {
+            background-color: #fbbf24;
+            color: #78350f;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Main Content / Landing Area */
+        main {
+            max-width: 800px;
+            width: 90%;
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        main h2 {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+
+        main p {
+            font-size: 16px;
+            color: #64748b;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        /* Area Fitur AI (Form Simulasi) */
+        .ai-card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: 600;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            resize: none;
+            font-size: 14px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn-generate {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-generate:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Area Hasil AI */
+        .result-area {
+            margin-top: 20px;
+            display: none; /* Disembunyikan sebelum tombol ditekan */
+            background-color: #eff6ff;
+            padding: 20px;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 5px;
+        }
+
+        .result-area h3 {
+            color: var(--primary-color);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        #aiOutput {
+            font-style: italic;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Bagian Header -->
+    <header>
+        <h1>KerjaCerdas.ai 🚀</h1>
+        <button class="btn-premium">Upgrade Premium (Rp15k)</button>
+    </header>
+
+    <!-- Bagian Utama Konten -->
+    <main>
+        <h2>Ubah Keahlianmu Jadi CV Profesional dalam Detik</h2>
+        <p>Tidak pandai merangkai kata untuk CV magang atau kerja? Tuliskan saja apa yang kamu bisa dengan bahasa sehari-hari, AI kami akan mengubahnya menjadi kalimat profesional yang dilirik HRD.</p>
+
+        <!-- Kotak Interaksi Produk -->
+        <div class="ai-card">
+            <div class="input-group">
+                <label for="userInput">Apa keahlian/pengalaman kamu? (Tulis bahasa santai saja)</label>
+                <textarea id="userInput" placeholder="Contoh: Saya anak RPL, jago bikin web pakai HTML dan CSS, pernah bikin web sekolah pas tugas akhir..."></textarea>
+            </div>
+            
+            <button class="btn-generate" onclick="generateProfilAI()">✨ Generate Profil Profesional</button>
+
+            <!-- Tempat memunculkan hasil dari AI -->
+            <div class="result-area" id="resultArea">
+                <h3>Hasil AI:</h3>
+                <p id="aiOutput"></p>
+            </div>
+        </div>
+    </main>
+
+    <!-- === BAGIAN JAVASCRIPT (LOGIKA WEB & SIMULASI AI) === -->
+    <script>
+        function generateProfilAI() {
+            // 1. Mengambil teks yang diketik pengguna
+            const inputTeks = document.getElementById("userInput").value;
+            const areaHasil = document.getElementById("resultArea");
+            const teksHasil = document.getElementById("aiOutput");
+            const tombol = document.querySelector(".btn-generate");
+
+            // 2. Validasi: Jangan jalan kalau teks kosong
+            if(inputTeks.trim() === "") {
+                alert("Tuliskan keahlianmu dulu, ya!");
+                return;
+            }
+
+            // 3. Memberikan efek "Sedang Berpikir/Loading"
+            tombol.innerHTML = "⏳ AI sedang merangkai kata...";
+            tombol.style.backgroundColor = "#94a3b8"; // Ubah warna jadi abu-abu
+            areaHasil.style.display = "none"; // Sembunyikan hasil lama
+
+            // 4. Simulasi proses AI berjalan (delay 2 detik agar terasa nyata)
+            setTimeout(() => {
+                // KARENA INI PROTOTIPE, KITA GUNAKAN LOGIKA SEDERHANA (Mockup AI).
+                // Di dunia nyata, di sini kita akan memanggil API dari OpenAI atau Gemini.
+                
+                let hasilProfesional = "";
+
+                // Mengecek kata kunci yang diketik pengguna untuk memberikan hasil yang relevan
+                if(inputTeks.toLowerCase().includes("web") || inputTeks.toLowerCase().includes("rpl") || inputTeks.toLowerCase().includes("coding")) {
+                    hasilProfesional = "Saya adalah lulusan Rekayasa Perangkat Lunak yang berdedikasi tinggi dengan keahlian praktis dalam pengembangan web. Memiliki pengalaman dalam merancang dan membangun antarmuka pengguna yang responsif menggunakan HTML dan CSS. Saya siap membawa inovasi dan kemampuan pemecahan masalah teknis ke dalam tim pengembangan perusahaan Anda.";
+                } 
+                else if(inputTeks.toLowerCase().includes("desain") || inputTeks.toLowerCase().includes("edit") || inputTeks.toLowerCase().includes("canva")) {
+                    hasilProfesional = "Individu kreatif yang memiliki minat besar dalam desain grafis dan komunikasi visual. Mampu mengoperasikan berbagai perangkat lunak desain untuk menciptakan aset visual yang menarik dan komunikatif. Berkomitmen untuk terus berkembang dan memberikan ide-ide segar dalam kampanye kreatif perusahaan.";
+                }
+                else {
+                    hasilProfesional = "Siswa lulusan SMK yang disiplin, cepat belajar, dan memiliki motivasi tinggi untuk berkontribusi di dunia kerja. Memiliki kemampuan komunikasi yang baik dan siap bekerja sama dalam tim untuk mencapai target perusahaan secara efisien.";
+                }
+
+                // 5. Menampilkan hasil ke layar
+                teksHasil.innerText = '"' + hasilProfesional + '"';
+                areaHasil.style.display = "block"; // Munculkan kotak hasil
+                
+                // 6. Kembalikan tombol seperti semula
+                tombol.innerHTML = "✨ Generate Ulang";
+                tombol.style.backgroundColor = "var(--primary-color)";
+
+            }, 2000); // 2000 milidetik = 2 detik
+        }
+    </script>
+
+</body>
+</html>
